@@ -8,4 +8,6 @@ import ru.kpfu.it.shorturl.model.Url;
  */
 public interface UrlRepository extends CrudRepository<Url, Long>{
     Url findByShortcode(String shortcode);
+
+    Url findByOriginalLink(String originalLink);
 }

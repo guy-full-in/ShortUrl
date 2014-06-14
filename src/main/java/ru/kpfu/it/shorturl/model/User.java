@@ -113,6 +113,14 @@ public class User {
         this.enabled = enabled;
     }
 
+    public List<Url> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<Url> urls) {
+        this.urls = urls;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
