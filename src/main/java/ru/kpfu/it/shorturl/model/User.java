@@ -49,6 +49,10 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "uur_ur_id", referencedColumnName = "user_role_id")})
     private List<UserRole> role;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
+    private List<Url> urls;
+
 
     public User() {
     }
