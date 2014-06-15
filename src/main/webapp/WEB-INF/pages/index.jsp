@@ -69,7 +69,7 @@
     <i class="glyphicon glyphicon-chevron-down" style="margin-top: -5px"> </i><br><br>
 
     <form class="form-inline">
-        <input id="shortUrl" type="text" name="shortCode" class="form-control" style="width: 400px"
+        <input id="shortUrl" type="text" name="shortCode" class="form-control" readonly style="cursor: pointer; width: 400px"
                placeholder="Результат" onclick="this.select();">
     </form>
     <br>
@@ -113,7 +113,7 @@
         <c:otherwise>
             <h4>История ссылок:</h4>
 
-            <div id="urlHistory"></div>
+            <div id="urls"></div>
         </c:otherwise>
     </c:choose>
 </div>
@@ -129,6 +129,7 @@
             var url = "/url";
             $.post(url, {'originalLink': originalLink}, function (url) {
                 $('input#shortUrl').val('localhost:8080/' + url.shortCode);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                loadUrls();
             });
         } else {
             var html = '<div class="error">';
@@ -149,39 +150,25 @@
     }
 
     function loadUrls() {
-        var url = "/lecture/";
-        url += ${lecture.id};
-        url += "/comments";
-        $.get(url, function (comments) {
-            $('#comments').html('');
-            if (comments.length == 0) {
-                $('#comments').append('У этой лекции пока нет комментариев.');
+        $.get("/urls", function (urls) {
+            $('#urls').html('');
+            if (urls.length == 0) {
+                $('#urls').append('У вас пока нет добавленных ссылок, или их срок истек.');
             } else {
-                var username = '${pageContext.request.userPrincipal.name}';
-                comments.forEach(function (comment) {
-
-                    var html = '<div class="comm">';
-                    if (username == comment.author.username) {
-                        html += '<button class="delete" aria-hidden="true" onclick=\"deleteComment(';
-                        html += comment.id;
-                        html += ');\">&times;</button>';
-                    }
-                    html += '<div class="commenterAuthor">';
-                    html += comment.author.username;
-                    html += '</div>';
-                    html += '<div class="commentText">' +
-                            '<p class="">';
-                    html += comment.text;
-                    html += '</p>' +
-                            '<span class="date sub-text"> at ';
-                    var date = new Date(comment.createdAt);
-                    html += date.getDay() + '.' + date.getMonth() + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
-                    html += '</span></div></div>';
-                    $('#comments').append(html);
+                var html ='<table class="table table-bordered urlHistory"><thead><tr><td>Оригинальная ссылка</td><td>Короткая ссылка</td><td>Дата добавления</td><td>Оставшийся срок</td></tr></thead><tbody>';
+                urls.forEach(function (url) {
+                    html += '<tr><td><a href="' + url.originalLink+'" target="_blank">'+url.originalLink+'</a></td><td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="localhost:8080/'+url.shortCode+'"/></td><td>';
+                    var date = new Date(url.createdAt);
+                    html += date.getDate() + '.' + (date.getMonth()+1) + '.' + date.getFullYear();
+                    html += '</td><td>'+(Math.ceil((url.deletedAt - new Date()) / (1000 * 60 * 60 * 24)))+' дней</td></tr>';
                 });
+                html += '</tbody></table>';
+                $('#urls').append(html);
             }
         })
     }
+
+    $(loadUrls());
     /*]]>*/
 </script>
 </body>
