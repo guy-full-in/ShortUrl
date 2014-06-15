@@ -2,6 +2,7 @@ package ru.kpfu.it.shorturl.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import ru.kpfu.it.shorturl.model.Url;
 import ru.kpfu.it.shorturl.service.UrlRepository;
 
@@ -11,6 +12,8 @@ import java.util.Iterator;
 /**
  * Created by Ayrat on 15.06.2014.
  */
+
+@Component
 public class ScheduledDeleteUrl {
 
     @Autowired

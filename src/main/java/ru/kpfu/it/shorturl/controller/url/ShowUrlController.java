@@ -27,12 +27,14 @@ public class ShowUrlController {
     @RequestMapping(value = "/urls", method = RequestMethod.GET)
     public @ResponseBody Iterable<Url> showUrls(Model model){
         Iterable<Url> urls;
-        Authentication user = SecurityContextHolder.getContext().getAuthentication();
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
         if(user != null) {
-            User author = userRepository.findByUsername(user.getName());
-            urls = author.getUrls();
-            if (urls != null){
-                return urls;
+            User author = userRepository.findByUsername(user);
+            if(author!=null) {
+                urls = author.getUrls();
+                if (urls != null) {
+                    return urls;
+                }
             }
         }
         return Collections.EMPTY_LIST;
