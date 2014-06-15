@@ -36,9 +36,23 @@
 
         <div class="navbar-right">
                <span style="font-size: 18px; padding-right: 10px">
-                Добро пожаловать, ${pageContext.request.userPrincipal.name}!
+                Добро пожаловать,
+                <c:choose>
+                    <c:when test="${pageContext.request.userPrincipal.name != null}">
+                        ${pageContext.request.userPrincipal.name}!
+                    </c:when>
+                    <c:otherwise>
+                        Гость!
+                    </c:otherwise>
+                </c:choose>
                </span>
-            <button class="btn btn-default" type="submit" onclick="javascript:formSubmit()">Выход</button>
+
+            <c:choose>
+                <c:when test="${pageContext.request.userPrincipal.name != null}">
+                    <button class="btn btn-default" type="submit" onclick="javascript:formSubmit()">Выход</button>
+                </c:when>
+            </c:choose>
+
         </div>
 
     </div>
@@ -46,20 +60,64 @@
 <div align="center">
     <div class="form-inline">
         <div id="errors"></div>
-        <input type="text" id="originalLink" name="originalLink" class="form-control" style="width: 300px" placeholder="Введите URL">
+        <input type="text" id="originalLink" name="originalLink" class="form-control" style="width: 300px"
+               placeholder="Введите URL">
         <button class="btn btn-primary" onclick="addUrl();">Выполнить</button>
     </div>
-
-    <br>
+    <h5>Просто вставьте вашу ссылку и получите сокращенную ниже</h5>
     <i class="glyphicon glyphicon-chevron-down"> </i><br>
     <i class="glyphicon glyphicon-chevron-down" style="margin-top: -5px"> </i><br><br>
 
     <form class="form-inline">
-        <input id="shortUrl" type="text" name="shortCode" class="form-control" style="width: 400px" placeholder="Результат" onclick="this.select();">
+        <input id="shortUrl" type="text" name="shortCode" class="form-control" style="width: 400px"
+               placeholder="Результат" onclick="this.select();">
     </form>
+    <br>
+
+
+    <c:choose>
+        <c:when test="${pageContext.request.userPrincipal.name == null}">
+
+            <h5><a href="/registr">Зарегистрируйтесь</a> или пройдите авторизацию ниже <br> и тогда вы сможете
+                видеть историю выших ссылок и продлевать их</h5>
+
+            <div id="loginForm" class="loginBlock">
+                <h3>Авторизация</h3>
+                <c:if test="${not empty error}">
+                    <div class="error">${error}</div>
+                </c:if>
+                <c:if test="${not empty msg}">
+                    <div class="msg">${msg}</div>
+                </c:if>
+                <form class="form-horizontal" role="form" action="<c:url value='/j_spring_security_check'/>"
+                      method='POST'>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-lg-8">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Логин">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-lg-8">
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Пароль">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-4">
+                            <button type="submit" class="btn btn-primary">Войти</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <h4>История ссылок:</h4>
+
+            <div id="urlHistory"></div>
+        </c:otherwise>
+    </c:choose>
 </div>
-
-
+</div>
 
 <script>
     /*<![CDATA[*/
@@ -70,8 +128,7 @@
         if (isValidURL(originalLink)) {
             var url = "/url";
             $.post(url, {'originalLink': originalLink}, function (url) {
-                alert(url.shortCode);
-                $('input#shortUrl').val('localhost:8080/'+url.shortCode);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                $('input#shortUrl').val('localhost:8080/' + url.shortCode);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             });
         } else {
             var html = '<div class="error">';
@@ -89,6 +146,41 @@
         } else {
             return false;
         }
+    }
+
+    function loadUrls() {
+        var url = "/lecture/";
+        url += ${lecture.id};
+        url += "/comments";
+        $.get(url, function (comments) {
+            $('#comments').html('');
+            if (comments.length == 0) {
+                $('#comments').append('У этой лекции пока нет комментариев.');
+            } else {
+                var username = '${pageContext.request.userPrincipal.name}';
+                comments.forEach(function (comment) {
+
+                    var html = '<div class="comm">';
+                    if (username == comment.author.username) {
+                        html += '<button class="delete" aria-hidden="true" onclick=\"deleteComment(';
+                        html += comment.id;
+                        html += ');\">&times;</button>';
+                    }
+                    html += '<div class="commenterAuthor">';
+                    html += comment.author.username;
+                    html += '</div>';
+                    html += '<div class="commentText">' +
+                            '<p class="">';
+                    html += comment.text;
+                    html += '</p>' +
+                            '<span class="date sub-text"> at ';
+                    var date = new Date(comment.createdAt);
+                    html += date.getDay() + '.' + date.getMonth() + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+                    html += '</span></div></div>';
+                    $('#comments').append(html);
+                });
+            }
+        })
     }
     /*]]>*/
 </script>

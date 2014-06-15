@@ -12,7 +12,7 @@
         <div class="container-fluid">
 
             <div style="margin-top: 5px">
-                <a class="navbar-brand" href="/">LecLib</a>
+                <a class="navbar-brand" href="/">ShortUrl</a>
             </div>
 
             <ul class="nav navbar-nav">
