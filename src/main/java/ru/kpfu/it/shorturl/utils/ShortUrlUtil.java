@@ -3,7 +3,7 @@ package ru.kpfu.it.shorturl.utils;
 /**
  * Created by Ayrat on 14.06.2014.
  */
-public class ShortUrl {
+public class ShortUrlUtil {
 
     public static String getShortCodeFromUrlId(Long id) {
         Double num = Double.valueOf(id);

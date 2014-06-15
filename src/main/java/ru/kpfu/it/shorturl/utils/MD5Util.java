@@ -4,10 +4,10 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MD5 {
+public class MD5Util {
     public static String get(String inputString) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5Util");
             byte[] messageDigest = md.digest(inputString.getBytes());
             BigInteger number = new BigInteger(1, messageDigest);
             String hashtext = number.toString(16);

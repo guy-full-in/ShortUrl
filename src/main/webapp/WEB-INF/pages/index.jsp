@@ -50,11 +50,12 @@
         <button class="btn btn-primary" onclick="addUrl();">Выполнить</button>
     </div>
 
+    <br>
     <i class="glyphicon glyphicon-chevron-down"> </i><br>
     <i class="glyphicon glyphicon-chevron-down" style="margin-top: -5px"> </i><br><br>
 
     <form class="form-inline">
-        <input id="shortUrl" type="text" readonly="readonly" name="shortCode" class="form-control" style="width: 400px" placeholder="Результат">
+        <input id="shortUrl" type="text" name="shortCode" class="form-control" style="width: 400px" placeholder="Результат" onclick="this.select();">
     </form>
 </div>
 
@@ -70,7 +71,7 @@
             var url = "/url";
             $.post(url, {'originalLink': originalLink}, function (url) {
                 alert(url.shortCode);
-                $('input#shortUrl').val(location.hostname+'/'+url.shortCode);
+                $('input#shortUrl').val('localhost:8080/'+url.shortCode);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             });
         } else {
             var html = '<div class="error">';
@@ -80,12 +81,12 @@
         }
     }
 
-    function isValidURL(url){
-        var RegExp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+    function isValidURL(url) {
+        var RegExp = /\(?(?:(http|https|ftp):\/\/)?(?:((?:[^\W\s]|\.|-|[:]{1})+)@{1})?((?:www.)?(?:[^\W\s]|\.|-)+[\.][^\W\s]{2,4}|localhost(?=\/)|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(\d*))?([\/]?[^\s\?]*[\/]{1})*(?:\/?([^\s\n\?\[\]\{\}\#]*(?:(?=\.)){1}|[^\s\n\?\[\]\{\}\.\#]*)?([\.]{1}[^\s\?\#]*)?)?(?:\?{1}([^\s\n\#\[\]]*))?([\#][^\s\n]*)?\)?/gi;
 
-        if(RegExp.test(url)){
+        if (RegExp.test(url)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

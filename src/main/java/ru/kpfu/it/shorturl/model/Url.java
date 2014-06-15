@@ -19,7 +19,6 @@ public class Url {
     @Column(name = "url_shortcode")
     String shortCode;
 
-    @URL(message = "Вы ввели некорректную ссылку")
     @Column(name = "url_original_link")
     String originalLink;
 

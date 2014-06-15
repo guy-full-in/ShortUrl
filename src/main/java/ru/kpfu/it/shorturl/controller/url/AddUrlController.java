@@ -12,9 +12,11 @@ import ru.kpfu.it.shorturl.model.Url;
 import ru.kpfu.it.shorturl.model.User;
 import ru.kpfu.it.shorturl.service.UrlRepository;
 import ru.kpfu.it.shorturl.service.UserRepository;
-import ru.kpfu.it.shorturl.utils.ShortUrl;
+import ru.kpfu.it.shorturl.utils.DateUtil;
+import ru.kpfu.it.shorturl.utils.ShortUrlUtil;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * Created by Ayrat on 14.06.2014.
@@ -32,19 +34,23 @@ public class AddUrlController {
     @RequestMapping(value = "/url", method = RequestMethod.POST)
     public @ResponseBody Url addUrl(@Valid Url url, BindingResult result, Model model){
         if(!result.hasErrors()) {
+            String originalLink = url.getOriginalLink();
+            if(!originalLink.startsWith("http://") && !originalLink.startsWith("https://") && !originalLink.startsWith("ftp://")){
+                originalLink = "http://" + originalLink;
+                url.setOriginalLink(originalLink);
+            }
             Url oldUrl = urlRepository.findByOriginalLink(url.getOriginalLink());
             if (oldUrl != null) {
-                System.out.println(oldUrl.getShortCode());
                 return oldUrl;
             }
-
             url = urlRepository.save(url);
-            url.setShortCode(ShortUrl.getShortCodeFromUrlId(url.getId()));
-
+            url.setShortCode(ShortUrlUtil.getShortCodeFromUrlId(url.getId()));
+            url.setClicks(0);
+            url.setCreatedAt(new Date());
+            url.setDeletedAt(DateUtil.addDays(url.getCreatedAt(), 30));
             User author = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
             url.setAuthor(author);
             urlRepository.save(url);
-            System.out.println(url.getShortCode());
             return url;
         }
         return url;

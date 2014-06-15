@@ -23,7 +23,7 @@ public class RedirectUrlController {
 
     @RequestMapping(value = "/x{shortCode}", method = RequestMethod.GET)
     public String redirectToOriginalUrl(@PathVariable String shortCode, Model model, HttpServletResponse response) throws IOException {
-        Url url = urlRepository.findByShortCode(shortCode);
+        Url url = urlRepository.findByShortCode("x"+shortCode);
         if (url == null){
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return "";

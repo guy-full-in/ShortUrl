@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kpfu.it.shorturl.model.User;
-import ru.kpfu.it.shorturl.utils.MD5;
+import ru.kpfu.it.shorturl.utils.MD5Util;
 
 import java.util.Arrays;
 
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User saveAsUser(User user) {
         user.setRole(Arrays.asList(userRoleRepository.findByAuthority("ROLE_USER")));
-        String hash = MD5.get(user.getPassword());
+        String hash = MD5Util.get(user.getPassword());
         user.setPassword(hash);
         return userRepository.save(user);
     }
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User saveAsAdmin(User user) {
         user.setRole(Arrays.asList(userRoleRepository.findByAuthority("ROLE_ADMIN")));
-        String hash = MD5.get(user.getPassword());
+        String hash = MD5Util.get(user.getPassword());
         user.setPassword(hash);
         return userRepository.save(user);
     }
