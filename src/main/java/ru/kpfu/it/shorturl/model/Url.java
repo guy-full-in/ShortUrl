@@ -1,6 +1,7 @@
 package ru.kpfu.it.shorturl.model;
 
-import javax.jws.soap.SOAPBinding;
+import org.hibernate.validator.constraints.URL;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -16,8 +17,9 @@ public class Url {
     Long id;
 
     @Column(name = "url_shortcode")
-    String shortcode;
+    String shortCode;
 
+    @URL(message = "Вы ввели некорректную ссылку")
     @Column(name = "url_original_link")
     String originalLink;
 
@@ -42,12 +44,12 @@ public class Url {
         this.id = id;
     }
 
-    public String getShortcode() {
-        return shortcode;
+    public String getShortCode() {
+        return shortCode;
     }
 
-    public void setShortcode(String shortcode) {
-        this.shortcode = shortcode;
+    public void setShortCode(String shortCode) {
+        this.shortCode = shortCode;
     }
 
     public String getOriginalLink() {

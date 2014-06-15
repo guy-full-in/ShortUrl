@@ -7,7 +7,7 @@ import ru.kpfu.it.shorturl.model.Url;
  * Created by Ayrat on 14.06.2014.
  */
 public interface UrlRepository extends CrudRepository<Url, Long>{
-    Url findByShortcode(String shortcode);
+    Url findByShortCode(String shortCode);
 
     Url findByOriginalLink(String originalLink);
 }

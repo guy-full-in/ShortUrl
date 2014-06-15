@@ -16,7 +16,7 @@ public class ShortUrl {
         }
         encodeString = charSet.charAt(num.intValue()) + encodeString;
 
-        return encodeString;
+        return "x"+encodeString;
     }
 
     public static String getShortCodeFromUrl(String URL) {

@@ -21,11 +21,11 @@ public class RedirectUrlController {
     @Autowired
     UrlRepository urlRepository;
 
-    @RequestMapping(value = "/{shortCode}", method = RequestMethod.GET)
+    @RequestMapping(value = "/x{shortCode}", method = RequestMethod.GET)
     public String redirectToOriginalUrl(@PathVariable String shortCode, Model model, HttpServletResponse response) throws IOException {
-        Url url = urlRepository.findByShortcode(shortCode);
+        Url url = urlRepository.findByShortCode(shortCode);
         if (url == null){
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return "";
         }
 

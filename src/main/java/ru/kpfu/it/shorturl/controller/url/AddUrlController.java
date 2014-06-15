@@ -29,19 +29,24 @@ public class AddUrlController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping(value = "url", method = RequestMethod.POST)
+    @RequestMapping(value = "/url", method = RequestMethod.POST)
     public @ResponseBody Url addUrl(@Valid Url url, BindingResult result, Model model){
-        Url oldUrl = urlRepository.findByOriginalLink(url.getOriginalLink());
-        if(oldUrl != null){
-            return oldUrl;
+        if(!result.hasErrors()) {
+            Url oldUrl = urlRepository.findByOriginalLink(url.getOriginalLink());
+            if (oldUrl != null) {
+                System.out.println(oldUrl.getShortCode());
+                return oldUrl;
+            }
+
+            url = urlRepository.save(url);
+            url.setShortCode(ShortUrl.getShortCodeFromUrlId(url.getId()));
+
+            User author = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+            url.setAuthor(author);
+            urlRepository.save(url);
+            System.out.println(url.getShortCode());
+            return url;
         }
-
-        urlRepository.save(url);
-        url.setShortcode(ShortUrl.getShortCodeFromUrlId(url.getId()));
-
-        User author = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-        url.setAuthor(author);
-
         return url;
     }
 
