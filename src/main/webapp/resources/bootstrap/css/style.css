@@ -133,5 +133,11 @@ th {
 }
 
 .urlHistory {
-    width: 90%;
+
+}
+
+.origUrl {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

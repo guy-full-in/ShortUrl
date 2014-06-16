@@ -161,16 +161,37 @@
             if (urls.length == 0) {
                 $('#urls').append('У вас пока нет добавленных ссылок, или их срок истек.');
             } else {
-                var html = '<table class="table table-bordered urlHistory"><thead><tr><td>Оригинальная ссылка</td><td>Короткая ссылка</td><td>Дата добавления</td><td>Оставшийся срок</td></tr></thead><tbody>';
+                var html = '<table class="table table-bordered urlHistory"><thead><tr><td>Оригинальная ссылка</td><td>Короткая ссылка</td><td>Дата добавления</td><td>Оставшийся срок</td><td>Клики</td><td>Действия</td></tr></thead><tbody>';
                 urls.forEach(function (url) {
-                    html += '<tr><td><a href="' + url.originalLink + '" target="_blank">' + url.originalLink + '</a></td><td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="localhost:8080/' + url.shortCode + '"/></td><td>';
+                    html += '<tr>' +
+                            '<td style="width: 50%"><div class="origUrl"><a href="' + url.originalLink + '" target="_blank">' + url.originalLink + '</a><div></td>' +
+                            '<td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="localhost:8080/' + url.shortCode + '"/></td>' +
+                            '<td>';
                     var date = new Date(url.createdAt);
                     html += date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
-                    html += '</td><td>' + (Math.ceil((url.deletedAt - new Date()) / (1000 * 60 * 60 * 24))) + ' дней</td></tr>';
+                    html += '</td>' +
+                            '<td>' + (Math.ceil((url.deletedAt - new Date()) / (1000 * 60 * 60 * 24))) + ' дней</td>' +
+                            '<td>'+url.clicks+'</td>' +
+                            '<td><i class="glyphicon glyphicon-plus" style="cursor: pointer" onclick="extendUrl('+url.id+');"></i><i class="glyphicon glyphicon-trash"style="cursor: pointer" onclick="deleteUrl('+url.id+');"></i></td>' +
+                            '</tr>';
                 });
                 html += '</tbody></table>';
                 $('#urls').append(html);
             }
+        })
+    }
+
+    function deleteUrl(id){
+        var url='url/'+id+'/delete';
+        $.post(url, function () {
+            loadUrls();
+        })
+    }
+
+    function extendUrl(id){
+        var url='url/'+id+'/extend';
+        $.post(url, function () {
+            loadUrls();
         })
     }
 
