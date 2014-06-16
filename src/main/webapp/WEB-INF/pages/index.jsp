@@ -63,13 +63,18 @@
         <input type="text" id="originalLink" name="originalLink" class="form-control" style="width: 300px"
                placeholder="Введите URL">
         <button class="btn btn-primary" onclick="addUrl();">Выполнить</button>
+        <br>
+        <c:if test="${pageContext.request.userPrincipal.name != null}">
+            <input type="checkbox" id="sendEmail" name="sendEmail">Отправить ссылку на e-mail</input>
+        </c:if>
     </div>
     <h5>Просто вставьте вашу ссылку и получите сокращенную ниже</h5>
     <i class="glyphicon glyphicon-chevron-down"> </i><br>
     <i class="glyphicon glyphicon-chevron-down" style="margin-top: -5px"> </i><br><br>
 
     <form class="form-inline">
-        <input id="shortUrl" type="text" name="shortCode" class="form-control" readonly style="cursor: pointer; width: 400px"
+        <input id="shortUrl" type="text" name="shortCode" class="form-control" readonly
+               style="cursor: pointer; width: 400px"
                placeholder="Результат" onclick="this.select();">
     </form>
     <br>
@@ -125,9 +130,10 @@
     function addUrl() {
         $('#errors').html('');
         var originalLink = $('input#originalLink').val();
+        var sendEmail = $('input#sendemail').val();
         if (isValidURL(originalLink)) {
             var url = "/url";
-            $.post(url, {'originalLink': originalLink}, function (url) {
+            $.post(url, {'originalLink': originalLink, 'sendEmail': sendEmail}, function (url) {
                 $('input#shortUrl').val('localhost:8080/' + url.shortCode);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 loadUrls();
             });
@@ -155,12 +161,12 @@
             if (urls.length == 0) {
                 $('#urls').append('У вас пока нет добавленных ссылок, или их срок истек.');
             } else {
-                var html ='<table class="table table-bordered urlHistory"><thead><tr><td>Оригинальная ссылка</td><td>Короткая ссылка</td><td>Дата добавления</td><td>Оставшийся срок</td></tr></thead><tbody>';
+                var html = '<table class="table table-bordered urlHistory"><thead><tr><td>Оригинальная ссылка</td><td>Короткая ссылка</td><td>Дата добавления</td><td>Оставшийся срок</td></tr></thead><tbody>';
                 urls.forEach(function (url) {
-                    html += '<tr><td><a href="' + url.originalLink+'" target="_blank">'+url.originalLink+'</a></td><td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="localhost:8080/'+url.shortCode+'"/></td><td>';
+                    html += '<tr><td><a href="' + url.originalLink + '" target="_blank">' + url.originalLink + '</a></td><td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="localhost:8080/' + url.shortCode + '"/></td><td>';
                     var date = new Date(url.createdAt);
-                    html += date.getDate() + '.' + (date.getMonth()+1) + '.' + date.getFullYear();
-                    html += '</td><td>'+(Math.ceil((url.deletedAt - new Date()) / (1000 * 60 * 60 * 24)))+' дней</td></tr>';
+                    html += date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+                    html += '</td><td>' + (Math.ceil((url.deletedAt - new Date()) / (1000 * 60 * 60 * 24))) + ' дней</td></tr>';
                 });
                 html += '</tbody></table>';
                 $('#urls').append(html);

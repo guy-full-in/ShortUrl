@@ -7,7 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import ru.kpfu.it.shorturl.mail.SendMail;
 import ru.kpfu.it.shorturl.model.Url;
 import ru.kpfu.it.shorturl.model.User;
 import ru.kpfu.it.shorturl.service.UrlRepository;
@@ -31,6 +33,9 @@ public class AddUrlController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    SendMail sendMail;
+
     @RequestMapping(value = "/url", method = RequestMethod.POST)
     public @ResponseBody Url addUrl(@Valid Url url, BindingResult result, Model model){
         if(!result.hasErrors()) {
@@ -50,6 +55,12 @@ public class AddUrlController {
             url.setDeletedAt(DateUtil.addDays(url.getCreatedAt(), 30));
             User author = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
             url.setAuthor(author);
+
+            System.out.println(url.isSendEmail());
+            if(url.isSendEmail()){
+                sendMail.sendMail(url);
+            }
+
             urlRepository.save(url);
             return url;
         }

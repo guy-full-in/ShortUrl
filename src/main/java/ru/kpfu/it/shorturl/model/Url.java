@@ -35,6 +35,9 @@ public class Url {
     @Column(name = "url_deleted_at")
     Date deletedAt;
 
+    @Transient
+    boolean sendEmail;
+
     public Long getId() {
         return id;
     }
@@ -89,5 +92,13 @@ public class Url {
 
     public void setDeletedAt(Date deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public boolean isSendEmail() {
+        return sendEmail;
+    }
+
+    public void setSendEmail(boolean sendEmail) {
+        this.sendEmail = sendEmail;
     }
 }
