@@ -73,7 +73,7 @@
     <i class="glyphicon glyphicon-chevron-down" style="margin-top: -5px"> </i><br><br>
 
     <form class="form-inline">
-        <input id="shortUrl" type="text" name="shortCode" class="shortUrl form-control" readonly
+        <input id="shortUrl" type="text" style="cursor: pointer;" name="shortCode" class="form-control" readonly
                placeholder="Результат" onclick="this.select();">
     </form>
     <br>
