@@ -20,14 +20,12 @@ public class SendMail {
         this.mailSender = mailSender;
     }
 
-    public void sendMail(Url url) {
+    public void sendMail(Url url, String baseUrl) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(url.getAuthor().getEmail());
         message.setSubject("Сокращенная ссылка от сервиса ShortUrl");
-        message.setText("Вы сократили ссылку " + url.getOriginalLink() + ". Теперь вы можете воспользоваться короткой ссылкой: localhost:8080/" + url.getShortCode());
-        System.out.println("Start sending mail from " + from + " to " + url.getAuthor().getEmail());
+        message.setText("Вы сократили ссылку " + url.getOriginalLink() + ". Теперь вы можете воспользоваться короткой ссылкой: "+ baseUrl + "/" + url.getShortCode());
         mailSender.send(message);
-        System.out.println("Mail is send from " + from + " to " + url.getAuthor().getEmail());
     }
 }

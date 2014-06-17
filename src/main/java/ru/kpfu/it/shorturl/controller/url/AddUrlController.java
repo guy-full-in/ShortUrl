@@ -17,6 +17,7 @@ import ru.kpfu.it.shorturl.service.UserRepository;
 import ru.kpfu.it.shorturl.utils.DateUtil;
 import ru.kpfu.it.shorturl.utils.ShortUrlUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Date;
 
@@ -37,34 +38,32 @@ public class AddUrlController {
     SendMail sendMail;
 
     @RequestMapping(value = "/url", method = RequestMethod.POST)
-    public @ResponseBody Url addUrl(@Valid Url url, BindingResult result, Model model){
+    public @ResponseBody Url addUrl(@Valid Url url, BindingResult result, Model model, HttpServletRequest request){
         if(!result.hasErrors()) {
+            User author = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
             String originalLink = url.getOriginalLink();
+
             if(!originalLink.startsWith("http://") && !originalLink.startsWith("https://") && !originalLink.startsWith("ftp://")){
                 originalLink = "http://" + originalLink;
                 url.setOriginalLink(originalLink);
             }
-            Url oldUrl = urlRepository.findByOriginalLink(url.getOriginalLink());
-            if (oldUrl != null) {
-                return oldUrl;
-            }
+
             url = urlRepository.save(url);
             url.setShortCode(ShortUrlUtil.getShortCodeFromUrlId(url.getId()));
             url.setClicks(0);
             url.setCreatedAt(new Date());
             url.setDeletedAt(DateUtil.addDays(url.getCreatedAt(), 30));
-            User author = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
             url.setAuthor(author);
 
-            System.out.println(url.isSendEmail());
             if(url.isSendEmail()){
-                sendMail.sendMail(url);
+                String baseUrl = request.getServerName()+":"+request.getServerPort();
+                sendMail.sendMail(url, baseUrl);
             }
 
             urlRepository.save(url);
             return url;
         }
-        return url;
+        return null;
     }
 
 }

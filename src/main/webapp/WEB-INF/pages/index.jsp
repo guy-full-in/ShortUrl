@@ -68,13 +68,12 @@
             <input type="checkbox" id="sendEmail" name="sendEmail">Отправить ссылку на e-mail</input>
         </c:if>
     </div>
-    <h5>Просто вставьте вашу ссылку и получите сокращенную ниже</h5>
+    <h5>Просто вставьте вашу ссылку и получите сокращенную ниже.<br> Срок действия ссылки 30 дней.</h5>
     <i class="glyphicon glyphicon-chevron-down"> </i><br>
     <i class="glyphicon glyphicon-chevron-down" style="margin-top: -5px"> </i><br><br>
 
     <form class="form-inline">
-        <input id="shortUrl" type="text" name="shortCode" class="form-control" readonly
-               style="cursor: pointer; width: 400px"
+        <input id="shortUrl" type="text" name="shortCode" class="shortUrl form-control" readonly
                placeholder="Результат" onclick="this.select();">
     </form>
     <br>
@@ -130,11 +129,15 @@
     function addUrl() {
         $('#errors').html('');
         var originalLink = $('input#originalLink').val();
-        var sendEmail = $('input#sendemail').val();
         if (isValidURL(originalLink)) {
             var url = "/url";
+            var sendEmail = false;
+            if (document.getElementById("sendEmail")!=null){
+                sendEmail = document.getElementById("sendEmail").checked;
+            }
+            $('input#shortUrl').val('Ждите...');
             $.post(url, {'originalLink': originalLink, 'sendEmail': sendEmail}, function (url) {
-                $('input#shortUrl').val('localhost:8080/' + url.shortCode);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                $('input#shortUrl').val(location.hostname + ':' + location.port + '/' + url.shortCode);
                 loadUrls();
             });
         } else {
@@ -165,14 +168,14 @@
                 urls.forEach(function (url) {
                     html += '<tr>' +
                             '<td style="width: 50%"><div class="origUrl"><a href="' + url.originalLink + '" target="_blank">' + url.originalLink + '</a><div></td>' +
-                            '<td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="localhost:8080/' + url.shortCode + '"/></td>' +
+                            '<td><input style="cursor: pointer" type="text" class="form-control" readonly onclick="this.select();" value="' + location.hostname + ':' + location.port + '/' + url.shortCode + '"/></td>' +
                             '<td>';
                     var date = new Date(url.createdAt);
                     html += date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
                     html += '</td>' +
                             '<td>' + (Math.ceil((url.deletedAt - new Date()) / (1000 * 60 * 60 * 24))) + ' дней</td>' +
-                            '<td>'+url.clicks+'</td>' +
-                            '<td><i class="glyphicon glyphicon-plus" style="cursor: pointer" onclick="extendUrl('+url.id+');"></i><i class="glyphicon glyphicon-trash"style="cursor: pointer" onclick="deleteUrl('+url.id+');"></i></td>' +
+                            '<td>' + url.clicks + '</td>' +
+                            '<td><i class="glyphicon glyphicon-plus" title="Продлить" style="cursor: pointer" onclick="extendUrl(' + url.id + ');"></i><i class="glyphicon glyphicon-trash" title="Удалить" style="cursor: pointer" onclick="deleteUrl(' + url.id + ');"></i></td>' +
                             '</tr>';
                 });
                 html += '</tbody></table>';
@@ -181,15 +184,15 @@
         })
     }
 
-    function deleteUrl(id){
-        var url='url/'+id+'/delete';
+    function deleteUrl(id) {
+        var url = 'url/' + id + '/delete';
         $.post(url, function () {
             loadUrls();
         })
     }
 
-    function extendUrl(id){
-        var url='url/'+id+'/extend';
+    function extendUrl(id) {
+        var url = 'url/' + id + '/extend';
         $.post(url, function () {
             loadUrls();
         })
